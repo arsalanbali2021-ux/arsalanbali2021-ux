@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=6ebd4e8c" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=6ed16f73" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
@@ -11,8 +11,8 @@ Hi, I'm Arsalan, a student in Mumbai working my way into AI and machine learning
 <!-- WORK:START -->
 
 <p align="center">
-  <img src="generated/card-01.svg?v=78f24ad1" width="49%" alt="Script Atlas: Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies. (JavaScript, in active development)" />
-  <a href="https://github.com/arsalanbali2021-ux/valuetrack"><img src="generated/card-02.svg?v=2e0ed8b3" width="49%" alt="ValueTrack: A modular, academic full-stack web application for managing loans, expenses, and insurance recommendations. (Python, ★ 1 · updated Feb 2026)" /></a>
+  <img src="generated/card-01.svg?v=0fed6087" width="49%" alt="Script Atlas: Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies. (JavaScript, in active development)" />
+  <a href="https://github.com/arsalanbali2021-ux/valuetrack"><img src="generated/card-02.svg?v=6cbd679b" width="49%" alt="ValueTrack: A modular, academic full-stack web application for managing loans, expenses, and insurance recommendations. (Python, ★ 1 · updated Feb 2026)" /></a>
 </p>
 
 <!-- WORK:END -->
@@ -34,7 +34,7 @@ I'm learning the fundamentals in Python: working with data first, then classic m
 
 <!-- LANGS:START -->
 
-<img src="generated/languages.svg?v=3a632d59" width="100%" alt="Languages across public repositories: Python 41.6%, HTML 23.4%, JavaScript 18.0%, CSS 16.7%" />
+<img src="generated/languages.svg?v=2f225836" width="100%" alt="Languages across public repositories: Python 41.6%, HTML 23.4%, JavaScript 18.0%, CSS 16.7%" />
 
 <!-- LANGS:END -->
 
@@ -44,7 +44,7 @@ Python · JavaScript · SQL · Flask · SQLAlchemy · MySQL · pandas · pytest 
 
 <!-- ACTIVITY:START -->
 
-<img src="generated/activity.svg?v=67970e78" width="100%" alt="72 contributions in the last 12 months" />
+<img src="generated/activity.svg?v=2748364d" width="100%" alt="72 contributions in the last 12 months" />
 
 <!-- ACTIVITY:END -->
 

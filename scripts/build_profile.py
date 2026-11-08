@@ -30,36 +30,29 @@ README = ROOT / "README.md"
 CONFIG = ROOT / "profile.json"
 API = "https://api.github.com"
 
-# Muted dark-olive palette
-BG = "#1B1E16"
-SURFACE = "#20241A"
-BORDER = "#333A2A"
-TEXT = "#ECEADF"
-MUTED = "#A9AC96"
-FAINT = "#80856D"
-ACCENT = "#A3B56E"
+# Blurple on a violet-tinted ink surface. Checked with the dataviz validator:
+# fills #6366F1 4.06:1, line #818CF8 6.09:1, heatmap ramp monotone with
+# its darkest step 2.07:1 against SURFACE.
+SURFACE = "#14151F"
+BORDER = "#2B2D42"
+BASELINE = "#3A3C50"
+TRACK = "#22243A"
+TEXT = "#F0F0F7"
+MUTED = "#C3C4D6"
+FAINT = "#8A8CA3"
+ACCENT = "#6366F1"       # fills: area, bars, heatmap
+ACCENT_LINE = "#818CF8"  # thin strokes and dots
+ACCENT_TEXT = "#A5B4FC"  # small accent labels
 HEAT = {
-    "NONE": "#262B1F",
-    "FIRST_QUARTILE": "#3D4A2B",
-    "SECOND_QUARTILE": "#566A39",
-    "THIRD_QUARTILE": "#788F4C",
-    "FOURTH_QUARTILE": "#A3B56E",
+    "NONE": "#1F2029",
+    "FIRST_QUARTILE": "#3E438D",
+    "SECOND_QUARTILE": "#4E53B3",
+    "THIRD_QUARTILE": "#6366F1",
+    "FOURTH_QUARTILE": "#818CF8",
 }
 SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif"
 MONO = "ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace"
 
-# GitHub's language colours, muted toward the palette before use.
-LANG_COLORS = {
-    "Python": "#3572A5", "JavaScript": "#F1E05A", "TypeScript": "#3178C6",
-    "HTML": "#E34C26", "CSS": "#663399", "SCSS": "#C6538C",
-    "Jupyter Notebook": "#DA5B0B", "Java": "#B07219", "C": "#555555",
-    "C++": "#F34B7D", "C#": "#178600", "Go": "#00ADD8", "Rust": "#DEA584",
-    "Kotlin": "#A97BFF", "Swift": "#F05138", "Dart": "#00B4AB",
-    "PHP": "#4F5D95", "Ruby": "#701516", "Shell": "#89E051",
-    "PowerShell": "#012456", "Batchfile": "#C1F12E", "R": "#198CE7",
-    "SQL": "#E38C00", "PLpgSQL": "#336790", "Vue": "#41B883",
-    "Svelte": "#FF3E00", "Dockerfile": "#384D54", "MATLAB": "#E16737",
-}
 # Not counted as "main languages" in the header line.
 MARKUP = {"HTML", "CSS", "SCSS", "Less", "Batchfile", "Makefile", "Dockerfile", "Procfile"}
 WEEKDAYS = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"]
@@ -193,16 +186,6 @@ def wrap(s: str, size: float, max_w: float, max_lines: int) -> list[str]:
     return [fit(line, size, max_w) for line in lines]
 
 
-def mute(hex_color: str, amount: float = 0.42, toward: str = "#8C9078") -> str:
-    a = [int(hex_color[i:i + 2], 16) for i in (1, 3, 5)]
-    b = [int(toward[i:i + 2], 16) for i in (1, 3, 5)]
-    return "#" + "".join(f"{round(x + (y - x) * amount):02X}" for x, y in zip(a, b))
-
-
-def lang_color(lang: str | None) -> str:
-    return mute(LANG_COLORS.get(lang or "", "#8C9078"))
-
-
 def weak(desc: str | None) -> bool:
     return not desc or len(desc.split()) < 4
 
@@ -276,10 +259,10 @@ def header_svg(cfg: dict, weeks: list | None, total: int | None, main_langs: lis
     out = [svg_open(W, H, f"{cfg['name']}. {cfg['headline']} {cfg['subline']}", style)]
     out.append(
         '<defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1">'
-        f'<stop offset="0" stop-color="{ACCENT}" stop-opacity=".26"/>'
+        f'<stop offset="0" stop-color="{ACCENT}" stop-opacity=".32"/>'
         f'<stop offset="1" stop-color="{ACCENT}" stop-opacity="0"/></linearGradient></defs>'
     )
-    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="16" fill="{BG}" stroke="{BORDER}" stroke-width="1.5"/>')
+    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="16" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
     out.append(f'<text class="s" x="48" y="104" font-size="46" font-weight="700" fill="{TEXT}">{esc(cfg["name"])}</text>')
     out.append(f'<text class="s" x="48" y="146" font-size="19" fill="{MUTED}">{esc(cfg["headline"])}</text>')
     out.append(f'<text class="s" x="48" y="174" font-size="15" fill="{FAINT}">{esc(cfg["subline"])}</text>')
@@ -299,12 +282,12 @@ def header_svg(cfg: dict, weeks: list | None, total: int | None, main_langs: lis
         line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
         for gy in (top, (top + base) / 2):
             out.append(f'<line x1="{x0}" y1="{gy:.1f}" x2="{x1}" y2="{gy:.1f}" stroke="{BORDER}" stroke-dasharray="2 5"/>')
-        out.append(f'<line x1="{x0}" y1="{base}" x2="{x1}" y2="{base}" stroke="{BORDER}" stroke-width="1.5"/>')
+        out.append(f'<line x1="{x0}" y1="{base}" x2="{x1}" y2="{base}" stroke="{BASELINE}" stroke-width="1.5"/>')
         out.append(f'<polygon points="{x0},{base} {line} {x1},{base}" fill="url(#area)"/>')
-        out.append(f'<polyline points="{line}" fill="none" stroke="{ACCENT}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>')
+        out.append(f'<polyline points="{line}" fill="none" stroke="{ACCENT_LINE}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>')
         ex, ey = pts[-1]
-        out.append(f'<circle class="ring" cx="{ex:.1f}" cy="{ey:.1f}" r="4" fill="none" stroke="{ACCENT}" stroke-width="1.5"/>')
-        out.append(f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="4" fill="{ACCENT}"/>')
+        out.append(f'<circle class="ring" cx="{ex:.1f}" cy="{ey:.1f}" r="4" fill="none" stroke="{ACCENT_LINE}" stroke-width="1.5"/>')
+        out.append(f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="4" fill="{ACCENT_LINE}"/>')
         out.append(f'<text class="m" x="{x0}" y="56" font-size="11" letter-spacing="1.4" fill="{FAINT}">CONTRIBUTIONS · 12 MONTHS</text>')
         out.append(f'<text class="s" x="{x1}" y="58" font-size="24" font-weight="700" fill="{TEXT}" text-anchor="end">{total}</text>')
         out.append(f'<text class="m" x="{x0}" y="208" font-size="10.5" letter-spacing="1" fill="{FAINT}">{month_year(days[0]["date"]).upper()}</text>')
@@ -321,13 +304,13 @@ def card_svg(index: int, card: dict) -> str:
     out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
     out.append(f'<text class="m" x="28" y="40" font-size="11" letter-spacing="1.5" fill="{FAINT}">{index:02d}</text>')
     if card.get("tag"):
-        out.append(f'<text class="m" x="{W - 28}" y="40" font-size="10" letter-spacing="1.5" fill="{ACCENT}" text-anchor="end">{esc(card["tag"])}</text>')
+        out.append(f'<text class="m" x="{W - 28}" y="40" font-size="10" letter-spacing="1.5" fill="{ACCENT_TEXT}" text-anchor="end">{esc(card["tag"])}</text>')
     out.append(f'<text class="s" x="28" y="72" font-size="19" font-weight="600" fill="{TEXT}">{esc(title)}</text>')
     for i, line in enumerate(lines):
         out.append(f'<text class="s" x="28" y="{100 + i * 20}" font-size="13.5" fill="{MUTED}">{esc(line)}</text>')
     meta = card.get("meta", "")
     if card.get("lang"):
-        out.append(f'<circle cx="33" cy="167" r="5" fill="{lang_color(card["lang"])}"/>')
+        out.append(f'<circle cx="33" cy="167" r="4.5" fill="{ACCENT_LINE}"/>')
         sep = f'<tspan fill="{FAINT}"> · {esc(meta)}</tspan>' if meta else ""
         out.append(f'<text class="s" x="46" y="171.5" font-size="12.5" fill="{MUTED}">{esc(card["lang"])}{sep}</text>')
     elif meta:
@@ -337,26 +320,21 @@ def card_svg(index: int, card: dict) -> str:
 
 
 def langs_svg(shares: list[tuple[str, float]]) -> str:
-    W, H = 1000, 100
-    bx, by, bw, bh = 32, 48, 936, 10
+    """One bar per language in a single hue; the text label carries identity."""
+    W, row, top = 1000, 30, 62
+    H = top + row * (len(shares) - 1) + 30
+    label_x, track_x, track_w, pct_x = 32, 180, 690, 968
     label = ", ".join(f"{n} {p:.1f}%" for n, p in shares)
     out = [svg_open(W, H, f"Languages across public repositories: {label}")]
-    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{BG}" stroke="{BORDER}" stroke-width="1.5"/>')
-    out.append(f'<text class="m" x="{bx}" y="32" font-size="11" letter-spacing="1.4" fill="{FAINT}">LANGUAGES · PUBLIC REPOSITORIES</text>')
-    out.append(f'<clipPath id="bar"><rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="5"/></clipPath><g clip-path="url(#bar)">')
-    shown = sum(p for _, p in shares) or 100
-    x = float(bx)
+    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
+    out.append(f'<text class="m" x="{label_x}" y="34" font-size="11" letter-spacing="1.4" fill="{FAINT}">LANGUAGES · PUBLIC REPOSITORIES</text>')
     for i, (name, pct) in enumerate(shares):
-        w = bw * pct / shown
-        gap = 2 if i < len(shares) - 1 else 0
-        out.append(f'<rect x="{x:.1f}" y="{by}" width="{max(w - gap, 0):.1f}" height="{bh}" fill="{lang_color(name)}"/>')
-        x += w
-    out.append("</g>")
-    x = float(bx)
-    for name, pct in shares:
-        out.append(f'<circle cx="{x + 5:.1f}" cy="78" r="4.5" fill="{lang_color(name)}"/>')
-        out.append(f'<text class="s" x="{x + 16:.1f}" y="82.5" font-size="12.5" fill="{MUTED}">{esc(name)}<tspan fill="{FAINT}"> {pct:.1f}%</tspan></text>')
-        x += 16 + text_width(f"{name} {pct:.1f}%", 12.5) + 26
+        y = top + i * row
+        w = max(track_w * pct / 100, 8)
+        out.append(f'<text class="s" x="{label_x}" y="{y + 4.5}" font-size="13.5" fill="{MUTED}">{esc(name)}</text>')
+        out.append(f'<rect x="{track_x}" y="{y - 4}" width="{track_w}" height="8" rx="4" fill="{TRACK}"/>')
+        out.append(f'<rect x="{track_x}" y="{y - 4}" width="{w:.1f}" height="8" rx="4" fill="{ACCENT}"/>')
+        out.append(f'<text class="s" x="{pct_x}" y="{y + 4.5}" font-size="13.5" fill="{TEXT}" text-anchor="end">{pct:.1f}%</text>')
     out.append("</svg>")
     return "".join(out)
 
@@ -375,7 +353,7 @@ def activity_svg(weeks: list, total: int) -> str:
     busiest = WEEKDAYS[per_weekday.index(max(per_weekday))] if total else "—"
 
     out = [svg_open(W, H, f"{total} contributions in the last 12 months. Longest streak {longest} days. Busiest on {busiest}.")]
-    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{BG}" stroke="{BORDER}" stroke-width="1.5"/>')
+    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
     last_label_x = -100
     prev_month = None
     for wi, week in enumerate(weeks):
