@@ -10,14 +10,25 @@
       "repo": "indic-script-atlas",
       "title": "Script Atlas",
       "description": "Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies.",
-      "language": "JavaScript",
-      "private_note": "in active development"
+      "language": "JavaScript"
     }
   ],
   "exclude": [],
   "ml_keywords": [
-    "machine-learning", "machine learning", "deep-learning", "deep learning",
-    "artificial-intelligence", "ai", "ml", "nlp", "computer-vision",
-    "llm", "data-science", "neural-network", "pytorch", "tensorflow", "scikit-learn"
+    "machine-learning",
+    "machine learning",
+    "deep-learning",
+    "deep learning",
+    "artificial-intelligence",
+    "ai",
+    "ml",
+    "nlp",
+    "computer-vision",
+    "llm",
+    "data-science",
+    "neural-network",
+    "pytorch",
+    "tensorflow",
+    "scikit-learn"
   ]
 }
