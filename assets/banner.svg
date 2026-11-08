@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" width="1200" height="380" role="img" aria-labelledby="title desc">
+  <title id="title">Arsalan Bali</title>
+  <desc id="desc">Student developer in Mumbai, India. I build software that reads the past and tracks the present.</desc>
+  <defs>
+    <pattern id="grain" width="7" height="7" patternUnits="userSpaceOnUse">
+      <circle class="grain" cx="1.2" cy="1.4" r="0.7"/>
+      <circle class="grain" cx="4.6" cy="4.8" r="0.45"/>
+    </pattern>
+    <clipPath id="plate"><rect x="1" y="1" width="1198" height="378" rx="18"/></clipPath>
+  </defs>
+  <style>
+    .bg{fill:#FFFAF1}.edge{fill:none;stroke:#EBD9C3;stroke-width:2}.grain{fill:#A94416;opacity:.06}
+    .band{fill:#E87522}.band2{fill:#A94416}
+    .ink{fill:#2B1A10}.soft{fill:#6E5442}.accent{fill:#A94416}.saff{fill:#E87522}
+    .shadow{fill:#A94416;opacity:.14}
+    .panel{fill:#FFFFFF;fill-opacity:.55;stroke:#EBD9C3;stroke-width:1.5}
+    .chip{fill:#FFFFFF;stroke:#EBD9C3;stroke-width:1.5}
+    .serif{font-family:Georgia,'Times New Roman',Times,serif}
+    .sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+    .deva{font-family:'Noto Serif Devanagari','Noto Sans Devanagari','Kohinoor Devanagari','Devanagari Sangam MN','Devanagari MT','Nirmala UI',Mangal,serif}
+    .caps{font-size:14px;font-weight:600;letter-spacing:3px}
+    .rule{fill:none;stroke:#E87522;stroke-width:3;stroke-linecap:round;stroke-dasharray:420;animation:draw 1.4s .4s ease-out both}
+    .glyph{fill:#E87522;fill-opacity:.92;stroke:#E87522;stroke-width:2;stroke-dasharray:3200;animation:carve 3.4s .2s ease-out both}
+    .rise{animation:rise .9s ease-out both}
+    .d1{animation-delay:.1s}.d2{animation-delay:.35s}.d3{animation-delay:.6s}.d4{animation-delay:.85s}
+    .pulse{animation:pulse 2.4s ease-in-out infinite}
+    @keyframes draw{from{stroke-dashoffset:420}to{stroke-dashoffset:0}}
+    @keyframes carve{0%{stroke-dashoffset:3200;fill-opacity:0}70%{stroke-dashoffset:0;fill-opacity:0}100%{stroke-dashoffset:0;fill-opacity:.92}}
+    @keyframes rise{from{opacity:0}to{opacity:1}}
+    @keyframes pulse{50%{opacity:.3}}
+    @media (prefers-color-scheme:dark){
+      .bg{fill:#17110C}.edge{stroke:#3A2B1F}.grain{fill:#E87522;opacity:.07}
+      .ink{fill:#F7EBDD}.soft{fill:#C9B29C}.accent{fill:#F08A3E}
+      .shadow{fill:#000;opacity:.5}
+      .panel{fill:#211811;fill-opacity:1;stroke:#3A2B1F}.chip{fill:#211811;stroke:#3A2B1F}
+    }
+    @media (prefers-reduced-motion:reduce){.rule,.glyph,.rise,.pulse{animation:none}}
+  </style>
+
+  <g clip-path="url(#plate)">
+    <rect class="bg" x="0" y="0" width="1200" height="380"/>
+    <rect x="0" y="0" width="1200" height="380" fill="url(#grain)"/>
+    <rect class="band" x="0" y="0" width="1200" height="6"/>
+    <rect class="band2" x="0" y="6" width="1200" height="2"/>
+  </g>
+  <rect class="edge" x="1" y="1" width="1198" height="378" rx="18"/>
+
+  <!-- left: identity -->
+  <text class="sans caps accent rise d1" x="64" y="84">STUDENT DEVELOPER  ·  MUMBAI, INDIA</text>
+  <text class="serif shadow" x="62" y="187" font-size="92" font-weight="700">Arsalan Bali</text>
+  <text class="serif ink" x="60" y="184" font-size="92" font-weight="700">Arsalan Bali</text>
+  <path class="rule" d="M64 214 H484"/>
+  <text class="serif soft rise d2" x="64" y="262" font-size="28" font-style="italic">I build software that reads the past and tracks the present.</text>
+
+  <g class="sans rise d3" font-size="14" font-weight="600">
+    <rect class="chip" x="64" y="298" width="226" height="36" rx="18"/>
+    <circle class="saff pulse" cx="86" cy="316" r="5"/>
+    <text class="ink" x="190" y="321" text-anchor="middle">Building Script Atlas</text>
+
+    <rect class="chip" x="302" y="298" width="238" height="36" rx="18"/>
+    <text class="ink" x="421" y="321" text-anchor="middle">Learning machine learning</text>
+
+    <rect class="chip" x="552" y="298" width="236" height="36" rx="18"/>
+    <text class="ink" x="670" y="321" text-anchor="middle">Open to internships</text>
+  </g>
+
+  <!-- right: the first letter -->
+  <rect class="panel" x="896" y="40" width="264" height="300" rx="14"/>
+  <text class="sans accent" x="1028" y="72" font-size="11" font-weight="600" letter-spacing="2.5" text-anchor="middle">ACCESSION Nº AB-2026</text>
+  <text class="deva glyph" x="1028" y="238" font-size="180" text-anchor="middle">अ</text>
+  <text class="serif ink rise d4" x="1028" y="290" font-size="15" font-style="italic" text-anchor="middle">first letter of the varṇamālā,</text>
+  <text class="serif ink rise d4" x="1028" y="311" font-size="15" font-style="italic" text-anchor="middle">and of my name</text>
+</svg>

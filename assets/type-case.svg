@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-labelledby="title desc">
+  <title id="title">The type case: tools I work with</title>
+  <desc id="desc">Python, JavaScript, HTML5, CSS3, SQL, Flask, SQLAlchemy, MySQL, pandas, pytest, Canvas 2D, Node.js, Git, GitHub.</desc>
+  <style>
+    .frame{fill:#A94416}.frame2{fill:#8E3912}
+    .cell{fill:#FFFAF1}.cellhi{fill:#FFF3E3}
+    .ink{fill:#2B1A10}.soft{fill:#8A6A52}
+    .serif{font-family:Georgia,'Times New Roman',Times,serif}
+    .sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+    .name{font-size:20px;font-weight:700}
+    .cat{font-size:10px;font-weight:600;letter-spacing:2px}
+    .set{animation:set .5s ease-out both}
+    @keyframes set{from{opacity:0}to{opacity:1}}
+    @media (prefers-color-scheme:dark){
+      .frame{fill:#6E2C0E}.frame2{fill:#521F08}
+      .cell{fill:#1E1610}.cellhi{fill:#261C14}
+      .ink{fill:#F7EBDD}.soft{fill:#C9A27F}
+    }
+    @media (prefers-reduced-motion:reduce){.set{animation:none}}
+  </style>
+
+  <rect class="frame2" x="18" y="22" width="1164" height="270" rx="18"/>
+  <rect class="frame" x="18" y="18" width="1164" height="266" rx="18"/>
+
+  <!-- 7 x 2 compartments: x = 36 + i*162, y = 36 / 160, w 150, h 112 -->
+  <g class="sans" text-anchor="middle">
+    <g class="set" style="animation-delay:.00s"><rect class="cell" x="36" y="36" width="150" height="112" rx="10"/><text class="serif ink name" x="111" y="96">Python</text><text class="soft cat" x="111" y="122">LANGUAGE</text></g>
+    <g class="set" style="animation-delay:.05s"><rect class="cell" x="198" y="36" width="150" height="112" rx="10"/><text class="serif ink name" x="273" y="96">JavaScript</text><text class="soft cat" x="273" y="122">LANGUAGE</text></g>
+    <g class="set" style="animation-delay:.10s"><rect class="cell" x="360" y="36" width="150" height="112" rx="10"/><text class="serif ink name" x="435" y="96">HTML5</text><text class="soft cat" x="435" y="122">WEB</text></g>
+    <g class="set" style="animation-delay:.15s"><rect class="cell" x="522" y="36" width="150" height="112" rx="10"/><text class="serif ink name" x="597" y="96">CSS3</text><text class="soft cat" x="597" y="122">WEB</text></g>
+    <g class="set" style="animation-delay:.20s"><rect class="cell" x="684" y="36" width="150" height="112" rx="10"/><text class="serif ink name" x="759" y="96">SQL</text><text class="soft cat" x="759" y="122">LANGUAGE</text></g>
+    <g class="set" style="animation-delay:.25s"><rect class="cell" x="846" y="36" width="150" height="112" rx="10"/><text class="serif ink name" x="921" y="96">Flask</text><text class="soft cat" x="921" y="122">BACKEND</text></g>
+    <g class="set" style="animation-delay:.30s"><rect class="cell" x="1008" y="36" width="150" height="112" rx="10"/><text class="serif ink name" x="1083" y="96" style="font-size:17px">SQLAlchemy</text><text class="soft cat" x="1083" y="122">ORM</text></g>
+
+    <g class="set" style="animation-delay:.35s"><rect class="cell" x="36" y="158" width="150" height="112" rx="10"/><text class="serif ink name" x="111" y="218">MySQL</text><text class="soft cat" x="111" y="244">DATABASE</text></g>
+    <g class="set" style="animation-delay:.40s"><rect class="cell" x="198" y="158" width="150" height="112" rx="10"/><text class="serif ink name" x="273" y="218">pandas</text><text class="soft cat" x="273" y="244">DATA</text></g>
+    <g class="set" style="animation-delay:.45s"><rect class="cell" x="360" y="158" width="150" height="112" rx="10"/><text class="serif ink name" x="435" y="218">pytest</text><text class="soft cat" x="435" y="244">TESTING</text></g>
+    <g class="set" style="animation-delay:.50s"><rect class="cell" x="522" y="158" width="150" height="112" rx="10"/><text class="serif ink name" x="597" y="218">Canvas 2D</text><text class="soft cat" x="597" y="244">GRAPHICS</text></g>
+    <g class="set" style="animation-delay:.55s"><rect class="cell" x="684" y="158" width="150" height="112" rx="10"/><text class="serif ink name" x="759" y="218">Node.js</text><text class="soft cat" x="759" y="244">RUNTIME</text></g>
+    <g class="set" style="animation-delay:.60s"><rect class="cell" x="846" y="158" width="150" height="112" rx="10"/><text class="serif ink name" x="921" y="218">Git</text><text class="soft cat" x="921" y="244">VERSION CONTROL</text></g>
+    <g class="set" style="animation-delay:.65s"><rect class="cell" x="1008" y="158" width="150" height="112" rx="10"/><text class="serif ink name" x="1083" y="218">GitHub</text><text class="soft cat" x="1083" y="244">COLLABORATION</text></g>
+  </g>
+</svg>
