@@ -14,8 +14,7 @@ A GitHub Action (`.github/workflows/refresh-profile.yml`) runs every 6 hours, on
 | Card titles | The README's `# Heading` when it matches the repo name (for example `ValueTrack`), otherwise the repo name |
 | Heading into AI/ML list | Public repos whose topics, name or description mention machine learning (or that are Jupyter notebooks), plus ML forks you are studying from |
 | Languages bar | Language bytes across your public, non-fork repos |
-| Code fingerprint | One ring per repo (oldest inside; private featured repos placed by their `started` date), language arcs by share, one dot per commit in public repos |
-| Elsewhere links | Website, social accounts and public email from your GitHub profile settings |
+| Elsewhere | The LinkedIn and email buttons in `contacts` (`profile.json`), plus any other website or social account from your GitHub profile settings |
 
 When nothing has changed, the Action doesn't commit anything.
 
@@ -27,7 +26,7 @@ When nothing has changed, the Action doesn't commit anything.
 - **Hide a repo:** add its name to `"exclude"` in `profile.json`.
 - **Feature a repo first:** add it to `"featured"` in `profile.json`. Private repos can only be featured this way, and only the text you write there is shown.
 - **Script Atlas goes public:** nothing to do. The card switches to live data and drops the `PRIVATE` tag.
-- **Add LinkedIn or a website:** add it in GitHub under Settings → Profile → Social accounts. It appears under *Elsewhere*.
+- **Change contact buttons:** edit `contacts` in `profile.json`. Other links added in GitHub under Settings → Profile → Social accounts appear under *Elsewhere* as text links.
 
 ## Run it now
 

@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=22ec4508" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=d09ff492" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
@@ -40,19 +40,14 @@ I'm learning the fundamentals in Python: working with data first, then classic m
 
 Python · JavaScript · SQL · Flask · SQLAlchemy · MySQL · pandas · pytest · HTML/CSS · Git
 
-### Code fingerprint
-
-<!-- FINGERPRINT:START -->
-
-<img src="generated/fingerprint.svg?v=62e0d998" width="100%" alt="Code fingerprint FP-39AA-45FC: rings are repositories, arcs are languages, dots are commits." />
-
-<!-- FINGERPRINT:END -->
-
 ### Elsewhere
 
 <!-- CONTACT:START -->
 
-[Say hello in an issue](https://github.com/arsalanbali2021-ux/arsalanbali2021-ux/issues/new?title=Hello%20Arsalan)
+<p>
+  <a href="https://www.linkedin.com/in/arsalan-bali-35b8993b1/"><img src="generated/contact-linkedin.svg?v=1c62d7fa" height="44" alt="LinkedIn: Arsalan Bali" /></a>
+  <a href="mailto:arsalanbali2021@gmail.com"><img src="generated/contact-email.svg?v=5a003c8f" height="44" alt="Email arsalanbali2021@gmail.com" /></a>
+</p>
 
 <!-- CONTACT:END -->
 

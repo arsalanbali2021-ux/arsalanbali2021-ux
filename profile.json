@@ -10,8 +10,7 @@
       "repo": "indic-script-atlas",
       "title": "Script Atlas",
       "description": "Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies.",
-      "language": "JavaScript",
-      "started": "2026-11-01"
+      "language": "JavaScript"
     }
   ],
   "exclude": [],
@@ -31,5 +30,19 @@
     "pytorch",
     "tensorflow",
     "scikit-learn"
+  ],
+  "contacts": [
+    {
+      "label": "LinkedIn: Arsalan Bali",
+      "icon": "linkedin",
+      "text": "LinkedIn",
+      "url": "https://www.linkedin.com/in/arsalan-bali-35b8993b1/"
+    },
+    {
+      "label": "Email arsalanbali2021@gmail.com",
+      "icon": "email",
+      "text": "arsalanbali2021@gmail.com",
+      "url": "mailto:arsalanbali2021@gmail.com"
+    }
   ]
 }

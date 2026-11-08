@@ -17,7 +17,6 @@ import datetime as dt
 import hashlib
 import html
 import json
-import math
 import os
 import re
 import sys
@@ -78,23 +77,6 @@ class Api:
         req = urllib.request.Request(url, data=data, headers=headers)
         with urllib.request.urlopen(req, timeout=30) as resp:
             return resp.read().decode("utf-8")
-
-    def count(self, path: str) -> int:
-        """Item count of a paginated list, read from the Link header (per_page=1)."""
-        req = urllib.request.Request(API + path, headers={
-            "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {self.token}",
-            "X-GitHub-Api-Version": "2022-11-28",
-            "User-Agent": "profile-readme-builder",
-        })
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                link = resp.headers.get("Link", "")
-                body = json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError:  # 409 for an empty repo
-            return 0
-        m = re.search(r'[?&]page=(\d+)>; rel="last"', link)
-        return int(m.group(1)) if m else len(body)
 
     def json(self, path: str):
         return json.loads(self._request(path))
@@ -352,101 +334,24 @@ def langs_svg(shares: list[tuple[str, float]]) -> str:
     return "".join(out)
 
 
-def parse_day(iso: str) -> dt.date:
-    return dt.date.fromisoformat(iso[:10])
+# --------------------------------------------------------------------- markdown
 
-
-RAMP = ["#818CF8", "#6366F1", "#4E53B3", "#3E438D"]  # brightest = largest share
-
-
-def seeded(text: str, salt: str = "") -> int:
-    return int(hashlib.sha1(f"{salt}:{text}".encode("utf-8")).hexdigest()[:8], 16)
-
-
-def fingerprint_svg(rings: list[dict], seed: str) -> str:
-    """Rings = repos (oldest inside), arcs = language shares, dots = commits."""
-    W, H, cx, cy = 1000, 340, 190, 170
-    n = len(rings)
-    total_commits = sum(r["commits"] for r in rings)
-    style = (
-        f".cw{{transform-box:view-box;transform-origin:{cx}px {cy}px;animation:spin 240s linear infinite}}"
-        f".ccw{{transform-box:view-box;transform-origin:{cx}px {cy}px;animation:spin 300s linear infinite reverse}}"
-        "@keyframes spin{to{transform:rotate(360deg)}}"
-        "@media (prefers-reduced-motion:reduce){.cw,.ccw{animation:none}}"
-    )
-    label = (f"Code fingerprint {seed}: {n} rings for {n} repositories, arcs for their languages, "
-             f"{total_commits} dots for commits in public repositories.")
-    out = [svg_open(W, H, label, style)]
-    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
-
-    def pt(angle: float, r: float) -> tuple[float, float]:
-        t = math.radians(angle - 90)
-        return cx + r * math.cos(t), cy + r * math.sin(t)
-
-    r_min, r_max = 44, 126
-    step = min(44, (r_max - r_min) / (n - 1)) if n > 1 else 0
-    orbit = r_min + step * max(n - 1, 0) + 26
-    out.append(f'<circle cx="{cx}" cy="{cy}" r="{orbit:.1f}" fill="none" stroke="{BORDER}" stroke-dasharray="2 6"/>')
-    for k in range(12):
-        x1, y1 = pt(k * 30, orbit - 4)
-        x2, y2 = pt(k * 30, orbit + 4)
-        out.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{BASELINE}" stroke-width="1.5"/>')
-
-    for i, ring in enumerate(rings):
-        r = r_min + step * i
-        offset = seeded(ring["name"], seed) % 360
-        out.append(f'<g class="{"cw" if i % 2 == 0 else "ccw"}">')
-        shares = [x for x in ring["langs"] if x[1] * 360 >= 4] or ring["langs"][:1]
-        total = sum(f for _, f in shares)
-        shares = [(name, f / total) for name, f in shares]
-        out.append(f'<circle cx="{cx}" cy="{cy}" r="{r:.1f}" fill="none" stroke="{TRACK}" stroke-width="6"/>')
-        a = offset
-        for k, (_, frac) in enumerate(shares):
-            sweep = 360 * frac - 7
-            x1, y1 = pt(a, r)
-            x2, y2 = pt(a + sweep, r)
-            big = 1 if sweep > 180 else 0
-            out.append(f'<path d="M{x1:.1f} {y1:.1f} A{r:.1f} {r:.1f} 0 {big} 1 {x2:.1f} {y2:.1f}" fill="none" '
-                       f'stroke="{RAMP[min(k, len(RAMP) - 1)]}" stroke-width="6" stroke-linecap="round"/>')
-            a += 360 * frac
-        dots = min(ring["commits"], 180)
-        for j in range(dots):
-            h = seeded(f"{ring['name']}:{j}", seed)
-            ang = offset + 360 * j / dots + (h % 7) - 3
-            dr = r + 9 + (h >> 4) % 4
-            x, y = pt(ang, dr)
-            out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="1.4" fill="{ACCENT_TEXT}" fill-opacity=".6"/>')
-        out.append("</g>")
-    out.append(f'<circle cx="{cx}" cy="{cy}" r="12" fill="none" stroke="{ACCENT_LINE}" stroke-opacity=".45" stroke-width="1.5"/>')
-    out.append(f'<circle cx="{cx}" cy="{cy}" r="4.5" fill="{ACCENT_LINE}"/>')
-
-    tx = 420
-    out.append(f'<text class="m" x="{tx}" y="64" font-size="11" letter-spacing="1.4" fill="{FAINT}">CODE FINGERPRINT · {esc(seed)}</text>')
-    out.append(f'<text class="s" x="{tx}" y="106" font-size="22" font-weight="700" fill="{TEXT}">Drawn from my repositories.</text>')
-    out.append(f'<text class="s" x="{tx}" y="134" font-size="15" fill="{MUTED}">It redraws itself as I build, so no two versions look the same.</text>')
-    rows = [
-        ("ring", f"{n} ring{'s' if n != 1 else ''}", "one per repository, oldest at the centre"),
-        ("arc", "arcs", "languages in each repo, brightest = largest share"),
-        ("dots", f"{total_commits} dots", "one per commit in my public repositories"),
-    ]
-    for k, (glyph, head, text) in enumerate(rows):
-        y = 196 + k * 44
-        gx = tx + 12
-        if glyph == "ring":
-            out.append(f'<circle cx="{gx}" cy="{y - 5}" r="8" fill="none" stroke="{RAMP[0]}" stroke-width="3"/>')
-        elif glyph == "arc":
-            out.append(f'<path d="M{gx - 9} {y - 1} A10 10 0 0 1 {gx + 1} {y - 13}" fill="none" stroke="{RAMP[0]}" stroke-width="3.5" stroke-linecap="round"/>')
-            out.append(f'<path d="M{gx + 5} {y - 12} A10 10 0 0 1 {gx + 10} {y - 4}" fill="none" stroke="{RAMP[2]}" stroke-width="3.5" stroke-linecap="round"/>')
-        else:
-            for dx, dy in ((-7, -2), (0, -9), (7, -3)):
-                out.append(f'<circle cx="{gx + dx}" cy="{y + dy}" r="2" fill="{ACCENT_TEXT}"/>')
-        out.append(f'<text class="s" x="{tx + 40}" y="{y}" font-size="14.5" fill="{TEXT}" font-weight="600">{esc(head)}'
-                   f'<tspan fill="{MUTED}" font-weight="400"> · {esc(text)}</tspan></text>')
+def contact_svg(icon: str, text: str) -> str:
+    """Pill button: brand-neutral icon in the accent, text in primary ink."""
+    tw = text_width(text, 15)
+    W, H = int(62 + tw * 1.08 + 24), 44
+    out = [svg_open(W, H, text)]
+    out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="{(H - 1.5) / 2}" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
+    if icon == "linkedin":
+        out.append(f'<rect x="18" y="11" width="22" height="22" rx="5" fill="{ACCENT}"/>')
+        out.append(f'<text class="s" x="29" y="27.5" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">in</text>')
+    else:  # envelope
+        out.append(f'<rect x="17" y="13" width="24" height="18" rx="3.5" fill="none" stroke="{ACCENT_LINE}" stroke-width="2"/>')
+        out.append(f'<path d="M18.5 15.5 L29 23.5 L39.5 15.5" fill="none" stroke="{ACCENT_LINE}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>')
+    out.append(f'<text class="s" x="54" y="27.5" font-size="15" font-weight="600" fill="{TEXT}">{esc(text)}</text>')
     out.append("</svg>")
     return "".join(out)
 
-
-# --------------------------------------------------------------------- markdown
 
 def img_tag(src: str, alt: str, width: str) -> str:
     return f'<img src="{src}" width="{width}" alt="{esc(alt)}" />'
@@ -496,10 +401,8 @@ def main() -> int:
 
     # Languages across public, original repositories
     lang_bytes: dict[str, int] = {}
-    repo_langs: dict[str, dict[str, int]] = {}
     for r in own:
-        repo_langs[r["name"]] = api.json(f"/repos/{r['full_name']}/languages")
-        for name, size in repo_langs[r["name"]].items():
+        for name, size in api.json(f"/repos/{r['full_name']}/languages").items():
             lang_bytes[name] = lang_bytes.get(name, 0) + size
     all_bytes = sum(lang_bytes.values())
     shares: list[tuple[str, float]] = []
@@ -606,25 +509,14 @@ def main() -> int:
     else:
         blocks["LANGS"] = ""
 
-    rings = []
-    for f in cfg.get("featured", []):
-        if f["repo"].lower() not in public_by_name and f.get("language"):
-            rings.append({"name": f["repo"], "start": f.get("started", "9999"),
-                          "langs": [(f["language"], 1.0)], "commits": 0})
-    for r in own:
-        langs = repo_langs.get(r["name"]) or {}
-        size = sum(langs.values()) or 1
-        rings.append({
-            "name": r["name"], "start": r["created_at"][:10],
-            "langs": sorted(((k, v / size) for k, v in langs.items()), key=lambda kv: -kv[1]) or [("?", 1.0)],
-            "commits": api.count(f"/repos/{r['full_name']}/commits?author={login}&per_page=1"),
-        })
-    rings = sorted(rings, key=lambda x: x["start"])[-6:]
-    if rings:
-        digest = hashlib.sha1(json.dumps(rings, sort_keys=True).encode("utf-8")).hexdigest().upper()
-        seed = f"FP-{digest[:4]}-{digest[4:8]}"
-        src = add("fingerprint.svg", fingerprint_svg(rings, seed))
-        blocks["FINGERPRINT"] = img_tag(src, f"Code fingerprint {seed}: rings are repositories, arcs are languages, dots are commits.", "100%")
+    def host(url: str) -> str:
+        return "mailto" if url.startswith("mailto:") else re.sub(r"^https?://(www\.)?", "", url).split("/")[0].lower()
+
+    buttons, taken = [], set()
+    for c in cfg.get("contacts", []):
+        src = add(f"contact-{c['icon']}.svg", contact_svg(c["icon"], c["text"]))
+        buttons.append(f'<a href="{esc(c["url"])}">{img_tag(src, c["label"], "")}</a>'.replace(' width=""', ' height="44"'))
+        taken.add(host(c["url"]))
 
     links = []
     blog = (user.get("blog") or "").strip()
@@ -637,9 +529,13 @@ def main() -> int:
         links.append(("X", f"https://x.com/{user['twitter_username']}"))
     if user.get("email"):
         links.append(("Email", f"mailto:{user['email']}"))
-    first_name = cfg["name"].split()[0]
-    links.append(("Say hello in an issue", f"https://github.com/{login}/{login}/issues/new?title=Hello%20{first_name}"))
-    blocks["CONTACT"] = " · ".join(f"[{label}]({url})" for label, url in links)
+    links = [(label, url) for label, url in links if host(url) not in taken]
+    parts = []
+    if buttons:
+        parts.append("<p>\n  " + "\n  ".join(buttons) + "\n</p>")
+    if links:
+        parts.append(" · ".join(f"[{label}]({url})" for label, url in links))
+    blocks["CONTACT"] = "\n\n".join(parts)
 
     new_text = readme_text
     for key, body in blocks.items():
