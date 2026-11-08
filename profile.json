@@ -1,0 +1,23 @@
+{
+  "name": "Arsalan Bali",
+  "headline": "Student in Mumbai, heading into AI/ML.",
+  "subline": "I build practical tools in Python and JavaScript.",
+  "location": "Mumbai, India",
+  "utc_offset_minutes": 330,
+  "max_projects": 6,
+  "featured": [
+    {
+      "repo": "indic-script-atlas",
+      "title": "Script Atlas",
+      "description": "Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies.",
+      "language": "JavaScript",
+      "private_note": "in active development"
+    }
+  ],
+  "exclude": [],
+  "ml_keywords": [
+    "machine-learning", "machine learning", "deep-learning", "deep learning",
+    "artificial-intelligence", "ai", "ml", "nlp", "computer-vision",
+    "llm", "data-science", "neural-network", "pytorch", "tensorflow", "scikit-learn"
+  ]
+}
