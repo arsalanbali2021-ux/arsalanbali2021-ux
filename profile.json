@@ -10,7 +10,8 @@
       "repo": "indic-script-atlas",
       "title": "Script Atlas",
       "description": "Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies.",
-      "language": "JavaScript"
+      "language": "JavaScript",
+      "started": "2026-11-01"
     }
   ],
   "exclude": [],

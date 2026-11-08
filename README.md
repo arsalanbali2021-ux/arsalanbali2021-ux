@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=f0e00634" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=5f1e1acf" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
@@ -12,7 +12,7 @@ Hi, I'm Arsalan, a student in Mumbai working my way into AI and machine learning
 
 <p align="center">
   <img src="generated/card-01.svg?v=f086d96a" width="49%" alt="Script Atlas: Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies. (JavaScript)" />
-  <a href="https://github.com/arsalanbali2021-ux/valuetrack"><img src="generated/card-02.svg?v=efd0b26f" width="49%" alt="valuetrack: ValueTrack is a full-stack web app I built as my 2nd-year B.Tech mini project. (HTML, ★ 1 · updated Nov 2026)" /></a>
+  <a href="https://github.com/arsalanbali2021-ux/valuetrack"><img src="generated/card-02.svg?v=feea8120" width="49%" alt="ValueTrack: Loans, monthly spending and health insurance, in one small web app. (Python, ★ 1 · updated Nov 2026)" /></a>
 </p>
 
 <!-- WORK:END -->
@@ -34,19 +34,19 @@ I'm learning the fundamentals in Python: working with data first, then classic m
 
 <!-- LANGS:START -->
 
-<img src="generated/languages.svg?v=c3bd377a" width="100%" alt="Languages across public repositories: HTML 31.7%, Python 29.9%, JavaScript 19.8%, CSS 18.4%" />
+<img src="generated/languages.svg?v=a694ae90" width="100%" alt="Languages across public repositories: Python 40.6%, JavaScript 25.2%, HTML 19.0%, CSS 14.9%" />
 
 <!-- LANGS:END -->
 
 Python · JavaScript · SQL · Flask · SQLAlchemy · MySQL · pandas · pytest · HTML/CSS · Git
 
-### Activity
+### Timeline
 
-<!-- ACTIVITY:START -->
+<!-- TIMELINE:START -->
 
-<img src="generated/activity.svg?v=49d830f8" width="100%" alt="111 contributions in the last 12 months" />
+<img src="generated/timeline.svg?v=92687b1d" width="100%" alt="Timeline: ValueTrack, ML-For-Beginners, 500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code, Script Atlas" />
 
-<!-- ACTIVITY:END -->
+<!-- TIMELINE:END -->
 
 ### Elsewhere
 

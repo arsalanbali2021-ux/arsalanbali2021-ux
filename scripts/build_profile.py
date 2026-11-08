@@ -43,19 +43,11 @@ FAINT = "#8A8CA3"
 ACCENT = "#6366F1"       # fills: area, bars, heatmap
 ACCENT_LINE = "#818CF8"  # thin strokes and dots
 ACCENT_TEXT = "#A5B4FC"  # small accent labels
-HEAT = {
-    "NONE": "#1F2029",
-    "FIRST_QUARTILE": "#3E438D",
-    "SECOND_QUARTILE": "#4E53B3",
-    "THIRD_QUARTILE": "#6366F1",
-    "FOURTH_QUARTILE": "#818CF8",
-}
 SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif"
 MONO = "ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace"
 
 # Not counted as "main languages" in the header line.
 MARKUP = {"HTML", "CSS", "SCSS", "Less", "Batchfile", "Makefile", "Dockerfile", "Procfile"}
-WEEKDAYS = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"]
 SOCIAL_LABELS = {
     "linkedin": "LinkedIn", "twitter": "X", "bluesky": "Bluesky", "mastodon": "Mastodon",
     "youtube": "YouTube", "instagram": "Instagram", "facebook": "Facebook",
@@ -202,6 +194,9 @@ def readme_summary(text: str) -> str:
     """First real sentence of a README, skipping headings, badges and lists."""
     for block in re.split(r"\n\s*\n", text):
         line = block.strip()
+        tagline = re.fullmatch(r"<p[^>]*>(.*?)</p>", line, re.S)
+        if tagline and "<img" not in line:
+            line = tagline.group(1).strip()
         if not line or line.startswith(("#", "!", "<", "|", "```", "-", "*", ">", "[", "=")):
             continue
         line = strip_md(line)
@@ -213,7 +208,7 @@ def readme_summary(text: str) -> str:
 
 def readme_title(text: str, repo_name: str) -> str | None:
     """Use the README's H1 spelling (e.g. 'ValueTrack') when it matches the repo name."""
-    m = re.search(r"^#\s+(.+)$", text, re.M)
+    m = re.search(r"^#\s+(.+)$", text, re.M) or re.search(r"<h1[^>]*>(.*?)</h1>", text, re.S)
     if not m:
         return None
     head = re.split(r"\s+[—–:|-]\s+", strip_md(m.group(1)))[0].strip()
@@ -339,44 +334,55 @@ def langs_svg(shares: list[tuple[str, float]]) -> str:
     return "".join(out)
 
 
-def activity_svg(weeks: list, total: int) -> str:
-    W, H = 1000, 196
-    step, cell, left, top = 15, 12, 56, 44
-    weeks = weeks[-53:]
-    days = [d for w in weeks for d in w["contributionDays"]]
-    longest = run = 0
-    per_weekday = [0] * 7
-    for d in days:
-        per_weekday[d["weekday"]] += d["contributionCount"]
-        run = run + 1 if d["contributionCount"] > 0 else 0
-        longest = max(longest, run)
-    busiest = WEEKDAYS[per_weekday.index(max(per_weekday))] if total else "—"
+def parse_day(iso: str) -> dt.date:
+    return dt.date.fromisoformat(iso[:10])
 
-    out = [svg_open(W, H, f"{total} contributions in the last 12 months. Longest streak {longest} days. Busiest on {busiest}.")]
+
+def timeline_svg(items: list[dict], start: dt.date, today: dt.date) -> str:
+    """Projects as spans (created -> last push) and study forks as hollow markers."""
+    W, row, top = 1000, 30, 82
+    H = top + row * (len(items) - 1) + 52
+    lx, cx0, cx1 = 32, 260, 952
+    span = max((today - start).days, 1)
+
+    def X(d: dt.date) -> float:
+        return cx0 + (cx1 - cx0) * min(max((d - start).days, 0), span) / span
+
+    desc = "; ".join(f"{i['label']} ({i['kind']}, from {i['start']:%b %Y})" for i in items)
+    out = [svg_open(W, H, f"Timeline since {start:%B %Y}: {desc}")]
     out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
-    last_label_x = -100
-    prev_month = None
-    for wi, week in enumerate(weeks):
-        x = left + wi * step
-        first = week["contributionDays"][0]["date"]
-        month = first[5:7]
-        if month != prev_month:
-            if x - last_label_x >= 36 and wi < len(weeks) - 2:
-                name = dt.datetime.strptime(first[:10], "%Y-%m-%d").strftime("%b")
-                out.append(f'<text class="m" x="{x}" y="34" font-size="10" fill="{FAINT}">{name}</text>')
-                last_label_x = x
-            prev_month = month
-        for d in week["contributionDays"]:
-            y = top + d["weekday"] * step
-            out.append(f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2.5" fill="{HEAT.get(d["contributionLevel"], HEAT["NONE"])}"/>')
-    for wd, name in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
-        out.append(f'<text class="m" x="{left - 10}" y="{top + wd * step + 10}" font-size="9.5" fill="{FAINT}" text-anchor="end">{name}</text>')
-    sx = 880
-    stats = [(str(total), "contributions"), (f"{longest} day{'s' if longest != 1 else ''}", "longest streak"), (busiest, "busiest day")]
-    for i, (value, label) in enumerate(stats):
-        y = 66 + i * 46
-        out.append(f'<text class="s" x="{sx}" y="{y}" font-size="20" font-weight="700" fill="{TEXT}">{esc(value)}</text>')
-        out.append(f'<text class="s" x="{sx}" y="{y + 16}" font-size="12" fill="{FAINT}">{label}</text>')
+    out.append(f'<text class="m" x="{lx}" y="34" font-size="11" letter-spacing="1.4" fill="{FAINT}">' + f"TIMELINE · SINCE {start:%b %Y}".upper() + "</text>")
+    # legend: shape, not colour, separates the two kinds
+    out.append(f'<rect x="806" y="26" width="18" height="8" rx="4" fill="{ACCENT}"/>')
+    out.append(f'<text class="s" x="832" y="34" font-size="12" fill="{MUTED}">building</text>')
+    out.append(f'<circle cx="899" cy="30" r="4.5" fill="none" stroke="{ACCENT_LINE}" stroke-width="2"/>')
+    out.append(f'<text class="s" x="910" y="34" font-size="12" fill="{MUTED}">studying</text>')
+
+    grid_top, grid_bot = top - 22, top + row * (len(items) - 1) + 16
+    month = dt.date(start.year, start.month, 1)
+    last_x = -100.0
+    while month <= today:
+        x = X(month)
+        if month >= start and x - last_x >= 44 and cx1 - x >= 30:
+            out.append(f'<line x1="{x:.1f}" y1="{grid_top}" x2="{x:.1f}" y2="{grid_bot}" stroke="{BORDER}" stroke-dasharray="2 5"/>')
+            name = month.strftime("%b %Y" if month.month == 1 or last_x < 0 else "%b")
+            out.append(f'<text class="m" x="{x:.1f}" y="{grid_bot + 20}" font-size="10" fill="{FAINT}" text-anchor="middle">{name}</text>')
+            last_x = x
+        month = dt.date(month.year + month.month // 12, month.month % 12 + 1, 1)
+    out.append(f'<line x1="{cx1}" y1="{grid_top}" x2="{cx1}" y2="{grid_bot}" stroke="{ACCENT_TEXT}" stroke-opacity=".6" stroke-dasharray="3 4"/>')
+    out.append(f'<text class="m" x="{cx1}" y="{grid_bot + 20}" font-size="10" fill="{ACCENT_TEXT}" text-anchor="end">NOW</text>')
+
+    for n, item in enumerate(items):
+        y = top + n * row
+        out.append(f'<text class="s" x="{lx}" y="{y + 4.5}" font-size="13.5" fill="{TEXT if item["kind"] == "building" else MUTED}">{esc(fit(item["label"], 13.5, cx0 - lx - 16))}</text>')
+        x0 = X(item["start"])
+        if item["kind"] == "building":
+            x1 = max(X(item["end"]), x0 + 10)
+            out.append(f'<rect x="{x0:.1f}" y="{y - 4}" width="{x1 - x0:.1f}" height="8" rx="4" fill="{ACCENT}"/>')
+            if item.get("ongoing"):
+                out.append(f'<circle cx="{x1 - 4:.1f}" cy="{y}" r="4" fill="{ACCENT_LINE}"/>')
+        else:
+            out.append(f'<circle cx="{x0:.1f}" cy="{y}" r="4.5" fill="{SURFACE}" stroke="{ACCENT_LINE}" stroke-width="2"/>')
     out.append("</svg>")
     return "".join(out)
 
@@ -425,7 +431,7 @@ def main() -> int:
         socials = []
     try:
         total, weeks = fetch_contributions(api, login)
-    except Exception as exc:  # keep the old activity graphic if this fails
+    except Exception as exc:  # header falls back to text only if this fails
         print(f"warning: contributions unavailable ({exc})", file=sys.stderr)
         total, weeks = None, None
 
@@ -522,9 +528,11 @@ def main() -> int:
     ml_lines = [f"- [{r['name']}]({r['html_url']}): {r.get('description') or 'machine learning project'}"
                 for r in own if is_ml(r, keywords)]
     study = []
+    study_items: list[dict] = []
     for r in forks:
         if is_ml(r, keywords):
             parent = api.json(f"/repos/{r['full_name']}").get("parent") or r
+            study_items.append({"label": parent["name"], "kind": "studying", "start": parse_day(r["created_at"])})
             study.append(f"- [{parent['full_name']}]({parent['html_url']}): {parent.get('description') or ''}".rstrip(": "))
     ml_parts = []
     if ml_lines:
@@ -539,12 +547,24 @@ def main() -> int:
     else:
         blocks["LANGS"] = ""
 
-    if weeks:
-        src = add("activity.svg", activity_svg(weeks, total))
-        blocks["ACTIVITY"] = img_tag(src, f"{total} contributions in the last 12 months", "100%")
-    elif (GEN_DIR / "activity.svg").exists():
-        files["activity.svg"] = (GEN_DIR / "activity.svg").read_text(encoding="utf-8")
-        blocks["ACTIVITY"] = current_block(readme_text, "ACTIVITY")
+    today_d = dt.datetime.now(tz).date()
+    titles = {c["url"]: c["title"] for c in cards if c.get("url")}
+    items = []
+    for r in own:
+        end = parse_day(r["pushed_at"])
+        items.append({"label": titles.get(r["html_url"], r["name"]), "kind": "building",
+                      "start": parse_day(r["created_at"]), "end": end,
+                      "ongoing": (today_d - end).days <= 14})
+    for f in cfg.get("featured", []):
+        if f["repo"].lower() not in public_by_name and f.get("started"):
+            items.append({"label": f.get("title", f["repo"]), "kind": "building",
+                          "start": parse_day(f["started"]), "end": today_d, "ongoing": True})
+    items += study_items
+    items = sorted(items, key=lambda i: i["start"])[-8:]
+    if items:
+        start = min([parse_day(user["created_at"])] + [i["start"] for i in items])
+        src = add("timeline.svg", timeline_svg(items, start, today_d))
+        blocks["TIMELINE"] = img_tag(src, "Timeline: " + ", ".join(i["label"] for i in items), "100%")
 
     links = []
     blog = (user.get("blog") or "").strip()
