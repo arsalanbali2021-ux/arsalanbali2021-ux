@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=a47d096b" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=22ec4508" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
