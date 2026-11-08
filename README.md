@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=ec2f8e06" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=8cb4504d" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
@@ -12,7 +12,7 @@ Hi, I'm Arsalan, a student in Mumbai working my way into AI and machine learning
 
 <p align="center">
   <img src="generated/card-01.svg?v=0fed6087" width="49%" alt="Script Atlas: Interactive atlas and epigraphy lab for South Asian writing systems: 28 scripts, real inscriptions, 121 automated tests, zero dependencies. (JavaScript, in active development)" />
-  <a href="https://github.com/arsalanbali2021-ux/valuetrack"><img src="generated/card-02.svg?v=6cbd679b" width="49%" alt="ValueTrack: A modular, academic full-stack web application for managing loans, expenses, and insurance recommendations. (Python, ★ 1 · updated Feb 2026)" /></a>
+  <a href="https://github.com/arsalanbali2021-ux/valuetrack"><img src="generated/card-02.svg?v=efd0b26f" width="49%" alt="valuetrack: ValueTrack is a full-stack web app I built as my 2nd-year B.Tech mini project. (HTML, ★ 1 · updated Nov 2026)" /></a>
 </p>
 
 <!-- WORK:END -->
@@ -34,7 +34,7 @@ I'm learning the fundamentals in Python: working with data first, then classic m
 
 <!-- LANGS:START -->
 
-<img src="generated/languages.svg?v=2f225836" width="100%" alt="Languages across public repositories: Python 41.6%, HTML 23.4%, JavaScript 18.0%, CSS 16.7%" />
+<img src="generated/languages.svg?v=c3bd377a" width="100%" alt="Languages across public repositories: HTML 31.7%, Python 29.9%, JavaScript 19.8%, CSS 18.4%" />
 
 <!-- LANGS:END -->
 
@@ -44,7 +44,7 @@ Python · JavaScript · SQL · Flask · SQLAlchemy · MySQL · pandas · pytest 
 
 <!-- ACTIVITY:START -->
 
-<img src="generated/activity.svg?v=f541a640" width="100%" alt="73 contributions in the last 12 months" />
+<img src="generated/activity.svg?v=7144539d" width="100%" alt="110 contributions in the last 12 months" />
 
 <!-- ACTIVITY:END -->
 
