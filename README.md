@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=7924bd28" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=95ce1ba3" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
@@ -46,7 +46,6 @@ Python · JavaScript · SQL · Flask · SQLAlchemy · MySQL · pandas · pytest 
 
 <p>
   <a href="https://www.linkedin.com/in/arsalan-bali-35b8993b1/"><img src="generated/contact-linkedin.svg?v=1c62d7fa" height="44" alt="LinkedIn: Arsalan Bali" /></a>
-  <a href="mailto:arsalanbali2021@gmail.com"><img src="generated/contact-email.svg?v=5a003c8f" height="44" alt="Email arsalanbali2021@gmail.com" /></a>
 </p>
 
 <!-- CONTACT:END -->
