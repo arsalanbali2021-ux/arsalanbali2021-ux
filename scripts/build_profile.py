@@ -17,6 +17,7 @@ import datetime as dt
 import hashlib
 import html
 import json
+import math
 import os
 import re
 import sys
@@ -77,6 +78,23 @@ class Api:
         req = urllib.request.Request(url, data=data, headers=headers)
         with urllib.request.urlopen(req, timeout=30) as resp:
             return resp.read().decode("utf-8")
+
+    def count(self, path: str) -> int:
+        """Item count of a paginated list, read from the Link header (per_page=1)."""
+        req = urllib.request.Request(API + path, headers={
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {self.token}",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "profile-readme-builder",
+        })
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                link = resp.headers.get("Link", "")
+                body = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError:  # 409 for an empty repo
+            return 0
+        m = re.search(r'[?&]page=(\d+)>; rel="last"', link)
+        return int(m.group(1)) if m else len(body)
 
     def json(self, path: str):
         return json.loads(self._request(path))
@@ -338,51 +356,92 @@ def parse_day(iso: str) -> dt.date:
     return dt.date.fromisoformat(iso[:10])
 
 
-def timeline_svg(items: list[dict], start: dt.date, today: dt.date) -> str:
-    """Projects as spans (created -> last push) and study forks as hollow markers."""
-    W, row, top = 1000, 30, 82
-    H = top + row * (len(items) - 1) + 52
-    lx, cx0, cx1 = 32, 260, 952
-    span = max((today - start).days, 1)
+RAMP = ["#818CF8", "#6366F1", "#4E53B3", "#3E438D"]  # brightest = largest share
 
-    def X(d: dt.date) -> float:
-        return cx0 + (cx1 - cx0) * min(max((d - start).days, 0), span) / span
 
-    desc = "; ".join(f"{i['label']} ({i['kind']}, from {i['start']:%b %Y})" for i in items)
-    out = [svg_open(W, H, f"Timeline since {start:%B %Y}: {desc}")]
+def seeded(text: str, salt: str = "") -> int:
+    return int(hashlib.sha1(f"{salt}:{text}".encode("utf-8")).hexdigest()[:8], 16)
+
+
+def fingerprint_svg(rings: list[dict], seed: str) -> str:
+    """Rings = repos (oldest inside), arcs = language shares, dots = commits."""
+    W, H, cx, cy = 1000, 340, 190, 170
+    n = len(rings)
+    total_commits = sum(r["commits"] for r in rings)
+    style = (
+        f".cw{{transform-box:view-box;transform-origin:{cx}px {cy}px;animation:spin 240s linear infinite}}"
+        f".ccw{{transform-box:view-box;transform-origin:{cx}px {cy}px;animation:spin 300s linear infinite reverse}}"
+        "@keyframes spin{to{transform:rotate(360deg)}}"
+        "@media (prefers-reduced-motion:reduce){.cw,.ccw{animation:none}}"
+    )
+    label = (f"Code fingerprint {seed}: {n} rings for {n} repositories, arcs for their languages, "
+             f"{total_commits} dots for commits in public repositories.")
+    out = [svg_open(W, H, label, style)]
     out.append(f'<rect x=".75" y=".75" width="{W - 1.5}" height="{H - 1.5}" rx="14" fill="{SURFACE}" stroke="{BORDER}" stroke-width="1.5"/>')
-    out.append(f'<text class="m" x="{lx}" y="34" font-size="11" letter-spacing="1.4" fill="{FAINT}">' + f"TIMELINE · SINCE {start:%b %Y}".upper() + "</text>")
-    # legend: shape, not colour, separates the two kinds
-    out.append(f'<rect x="806" y="26" width="18" height="8" rx="4" fill="{ACCENT}"/>')
-    out.append(f'<text class="s" x="832" y="34" font-size="12" fill="{MUTED}">building</text>')
-    out.append(f'<circle cx="899" cy="30" r="4.5" fill="none" stroke="{ACCENT_LINE}" stroke-width="2"/>')
-    out.append(f'<text class="s" x="910" y="34" font-size="12" fill="{MUTED}">studying</text>')
 
-    grid_top, grid_bot = top - 22, top + row * (len(items) - 1) + 16
-    month = dt.date(start.year, start.month, 1)
-    last_x = -100.0
-    while month <= today:
-        x = X(month)
-        if month >= start and x - last_x >= 44 and cx1 - x >= 30:
-            out.append(f'<line x1="{x:.1f}" y1="{grid_top}" x2="{x:.1f}" y2="{grid_bot}" stroke="{BORDER}" stroke-dasharray="2 5"/>')
-            name = month.strftime("%b %Y" if month.month == 1 or last_x < 0 else "%b")
-            out.append(f'<text class="m" x="{x:.1f}" y="{grid_bot + 20}" font-size="10" fill="{FAINT}" text-anchor="middle">{name}</text>')
-            last_x = x
-        month = dt.date(month.year + month.month // 12, month.month % 12 + 1, 1)
-    out.append(f'<line x1="{cx1}" y1="{grid_top}" x2="{cx1}" y2="{grid_bot}" stroke="{ACCENT_TEXT}" stroke-opacity=".6" stroke-dasharray="3 4"/>')
-    out.append(f'<text class="m" x="{cx1}" y="{grid_bot + 20}" font-size="10" fill="{ACCENT_TEXT}" text-anchor="end">NOW</text>')
+    def pt(angle: float, r: float) -> tuple[float, float]:
+        t = math.radians(angle - 90)
+        return cx + r * math.cos(t), cy + r * math.sin(t)
 
-    for n, item in enumerate(items):
-        y = top + n * row
-        out.append(f'<text class="s" x="{lx}" y="{y + 4.5}" font-size="13.5" fill="{TEXT if item["kind"] == "building" else MUTED}">{esc(fit(item["label"], 13.5, cx0 - lx - 16))}</text>')
-        x0 = X(item["start"])
-        if item["kind"] == "building":
-            x1 = max(X(item["end"]), x0 + 10)
-            out.append(f'<rect x="{x0:.1f}" y="{y - 4}" width="{x1 - x0:.1f}" height="8" rx="4" fill="{ACCENT}"/>')
-            if item.get("ongoing"):
-                out.append(f'<circle cx="{x1 - 4:.1f}" cy="{y}" r="4" fill="{ACCENT_LINE}"/>')
+    r_min, r_max = 44, 126
+    step = min(44, (r_max - r_min) / (n - 1)) if n > 1 else 0
+    orbit = r_min + step * max(n - 1, 0) + 26
+    out.append(f'<circle cx="{cx}" cy="{cy}" r="{orbit:.1f}" fill="none" stroke="{BORDER}" stroke-dasharray="2 6"/>')
+    for k in range(12):
+        x1, y1 = pt(k * 30, orbit - 4)
+        x2, y2 = pt(k * 30, orbit + 4)
+        out.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{BASELINE}" stroke-width="1.5"/>')
+
+    for i, ring in enumerate(rings):
+        r = r_min + step * i
+        offset = seeded(ring["name"], seed) % 360
+        out.append(f'<g class="{"cw" if i % 2 == 0 else "ccw"}">')
+        shares = [x for x in ring["langs"] if x[1] * 360 >= 4] or ring["langs"][:1]
+        total = sum(f for _, f in shares)
+        shares = [(name, f / total) for name, f in shares]
+        out.append(f'<circle cx="{cx}" cy="{cy}" r="{r:.1f}" fill="none" stroke="{TRACK}" stroke-width="6"/>')
+        a = offset
+        for k, (_, frac) in enumerate(shares):
+            sweep = 360 * frac - 7
+            x1, y1 = pt(a, r)
+            x2, y2 = pt(a + sweep, r)
+            big = 1 if sweep > 180 else 0
+            out.append(f'<path d="M{x1:.1f} {y1:.1f} A{r:.1f} {r:.1f} 0 {big} 1 {x2:.1f} {y2:.1f}" fill="none" '
+                       f'stroke="{RAMP[min(k, len(RAMP) - 1)]}" stroke-width="6" stroke-linecap="round"/>')
+            a += 360 * frac
+        dots = min(ring["commits"], 180)
+        for j in range(dots):
+            h = seeded(f"{ring['name']}:{j}", seed)
+            ang = offset + 360 * j / dots + (h % 7) - 3
+            dr = r + 9 + (h >> 4) % 4
+            x, y = pt(ang, dr)
+            out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="1.4" fill="{ACCENT_TEXT}" fill-opacity=".6"/>')
+        out.append("</g>")
+    out.append(f'<circle cx="{cx}" cy="{cy}" r="12" fill="none" stroke="{ACCENT_LINE}" stroke-opacity=".45" stroke-width="1.5"/>')
+    out.append(f'<circle cx="{cx}" cy="{cy}" r="4.5" fill="{ACCENT_LINE}"/>')
+
+    tx = 420
+    out.append(f'<text class="m" x="{tx}" y="64" font-size="11" letter-spacing="1.4" fill="{FAINT}">CODE FINGERPRINT · {esc(seed)}</text>')
+    out.append(f'<text class="s" x="{tx}" y="106" font-size="22" font-weight="700" fill="{TEXT}">Drawn from my repositories.</text>')
+    out.append(f'<text class="s" x="{tx}" y="134" font-size="15" fill="{MUTED}">It redraws itself as I build, so no two versions look the same.</text>')
+    rows = [
+        ("ring", f"{n} ring{'s' if n != 1 else ''}", "one per repository, oldest at the centre"),
+        ("arc", "arcs", "languages in each repo, brightest = largest share"),
+        ("dots", f"{total_commits} dots", "one per commit in my public repositories"),
+    ]
+    for k, (glyph, head, text) in enumerate(rows):
+        y = 196 + k * 44
+        gx = tx + 12
+        if glyph == "ring":
+            out.append(f'<circle cx="{gx}" cy="{y - 5}" r="8" fill="none" stroke="{RAMP[0]}" stroke-width="3"/>')
+        elif glyph == "arc":
+            out.append(f'<path d="M{gx - 9} {y - 1} A10 10 0 0 1 {gx + 1} {y - 13}" fill="none" stroke="{RAMP[0]}" stroke-width="3.5" stroke-linecap="round"/>')
+            out.append(f'<path d="M{gx + 5} {y - 12} A10 10 0 0 1 {gx + 10} {y - 4}" fill="none" stroke="{RAMP[2]}" stroke-width="3.5" stroke-linecap="round"/>')
         else:
-            out.append(f'<circle cx="{x0:.1f}" cy="{y}" r="4.5" fill="{SURFACE}" stroke="{ACCENT_LINE}" stroke-width="2"/>')
+            for dx, dy in ((-7, -2), (0, -9), (7, -3)):
+                out.append(f'<circle cx="{gx + dx}" cy="{y + dy}" r="2" fill="{ACCENT_TEXT}"/>')
+        out.append(f'<text class="s" x="{tx + 40}" y="{y}" font-size="14.5" fill="{TEXT}" font-weight="600">{esc(head)}'
+                   f'<tspan fill="{MUTED}" font-weight="400"> · {esc(text)}</tspan></text>')
     out.append("</svg>")
     return "".join(out)
 
@@ -437,8 +496,10 @@ def main() -> int:
 
     # Languages across public, original repositories
     lang_bytes: dict[str, int] = {}
+    repo_langs: dict[str, dict[str, int]] = {}
     for r in own:
-        for name, size in api.json(f"/repos/{r['full_name']}/languages").items():
+        repo_langs[r["name"]] = api.json(f"/repos/{r['full_name']}/languages")
+        for name, size in repo_langs[r["name"]].items():
             lang_bytes[name] = lang_bytes.get(name, 0) + size
     all_bytes = sum(lang_bytes.values())
     shares: list[tuple[str, float]] = []
@@ -528,11 +589,9 @@ def main() -> int:
     ml_lines = [f"- [{r['name']}]({r['html_url']}): {r.get('description') or 'machine learning project'}"
                 for r in own if is_ml(r, keywords)]
     study = []
-    study_items: list[dict] = []
     for r in forks:
         if is_ml(r, keywords):
             parent = api.json(f"/repos/{r['full_name']}").get("parent") or r
-            study_items.append({"label": parent["name"], "kind": "studying", "start": parse_day(r["created_at"])})
             study.append(f"- [{parent['full_name']}]({parent['html_url']}): {parent.get('description') or ''}".rstrip(": "))
     ml_parts = []
     if ml_lines:
@@ -547,24 +606,25 @@ def main() -> int:
     else:
         blocks["LANGS"] = ""
 
-    today_d = dt.datetime.now(tz).date()
-    titles = {c["url"]: c["title"] for c in cards if c.get("url")}
-    items = []
-    for r in own:
-        end = parse_day(r["pushed_at"])
-        items.append({"label": titles.get(r["html_url"], r["name"]), "kind": "building",
-                      "start": parse_day(r["created_at"]), "end": end,
-                      "ongoing": (today_d - end).days <= 14})
+    rings = []
     for f in cfg.get("featured", []):
-        if f["repo"].lower() not in public_by_name and f.get("started"):
-            items.append({"label": f.get("title", f["repo"]), "kind": "building",
-                          "start": parse_day(f["started"]), "end": today_d, "ongoing": True})
-    items += study_items
-    items = sorted(items, key=lambda i: i["start"])[-8:]
-    if items:
-        start = min([parse_day(user["created_at"])] + [i["start"] for i in items])
-        src = add("timeline.svg", timeline_svg(items, start, today_d))
-        blocks["TIMELINE"] = img_tag(src, "Timeline: " + ", ".join(i["label"] for i in items), "100%")
+        if f["repo"].lower() not in public_by_name and f.get("language"):
+            rings.append({"name": f["repo"], "start": f.get("started", "9999"),
+                          "langs": [(f["language"], 1.0)], "commits": 0})
+    for r in own:
+        langs = repo_langs.get(r["name"]) or {}
+        size = sum(langs.values()) or 1
+        rings.append({
+            "name": r["name"], "start": r["created_at"][:10],
+            "langs": sorted(((k, v / size) for k, v in langs.items()), key=lambda kv: -kv[1]) or [("?", 1.0)],
+            "commits": api.count(f"/repos/{r['full_name']}/commits?author={login}&per_page=1"),
+        })
+    rings = sorted(rings, key=lambda x: x["start"])[-6:]
+    if rings:
+        digest = hashlib.sha1(json.dumps(rings, sort_keys=True).encode("utf-8")).hexdigest().upper()
+        seed = f"FP-{digest[:4]}-{digest[4:8]}"
+        src = add("fingerprint.svg", fingerprint_svg(rings, seed))
+        blocks["FINGERPRINT"] = img_tag(src, f"Code fingerprint {seed}: rings are repositories, arcs are languages, dots are commits.", "100%")
 
     links = []
     blog = (user.get("blog") or "").strip()

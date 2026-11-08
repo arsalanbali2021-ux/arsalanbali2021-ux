@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=3ce6f29a" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=a47d096b" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
@@ -40,13 +40,13 @@ I'm learning the fundamentals in Python: working with data first, then classic m
 
 Python · JavaScript · SQL · Flask · SQLAlchemy · MySQL · pandas · pytest · HTML/CSS · Git
 
-### Timeline
+### Code fingerprint
 
-<!-- TIMELINE:START -->
+<!-- FINGERPRINT:START -->
 
-<img src="generated/timeline.svg?v=92687b1d" width="100%" alt="Timeline: ValueTrack, ML-For-Beginners, 500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code, Script Atlas" />
+<img src="generated/fingerprint.svg?v=62e0d998" width="100%" alt="Code fingerprint FP-39AA-45FC: rings are repositories, arcs are languages, dots are commits." />
 
-<!-- TIMELINE:END -->
+<!-- FINGERPRINT:END -->
 
 ### Elsewhere
 

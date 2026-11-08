@@ -14,7 +14,7 @@ A GitHub Action (`.github/workflows/refresh-profile.yml`) runs every 6 hours, on
 | Card titles | The README's `# Heading` when it matches the repo name (for example `ValueTrack`), otherwise the repo name |
 | Heading into AI/ML list | Public repos whose topics, name or description mention machine learning (or that are Jupyter notebooks), plus ML forks you are studying from |
 | Languages bar | Language bytes across your public, non-fork repos |
-| Timeline | Each public repo from creation to last push, featured private repos from their `started` date, and ML forks as study markers |
+| Code fingerprint | One ring per repo (oldest inside; private featured repos placed by their `started` date), language arcs by share, one dot per commit in public repos |
 | Elsewhere links | Website, social accounts and public email from your GitHub profile settings |
 
 When nothing has changed, the Action doesn't commit anything.
@@ -41,4 +41,4 @@ To preview locally (Python 3.9 or later, no packages needed):
 GITHUB_TOKEN=$(gh auth token) python scripts/build_profile.py
 ```
 
-GitHub pauses scheduled workflows in a public repo after 60 days with no activity. The header chart and timeline change daily, which normally keeps it active. If GitHub ever emails you that the workflow was disabled, open the Actions tab and click **Enable workflow**.
+GitHub pauses scheduled workflows in a public repo after 60 days with no activity. The header chart changes daily, which normally keeps it active. If GitHub ever emails you that the workflow was disabled, open the Actions tab and click **Enable workflow**.
