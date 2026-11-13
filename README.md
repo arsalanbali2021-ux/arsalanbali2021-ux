@@ -1,6 +1,6 @@
 <!-- HEADER:START -->
 
-<img src="generated/header.svg?v=04db7630" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
+<img src="generated/header.svg?v=a90ec587" width="100%" alt="Arsalan Bali. Student in Mumbai, heading into AI/ML. I build practical tools in Python and JavaScript." />
 
 <!-- HEADER:END -->
 
@@ -52,6 +52,6 @@ Python · JavaScript · SQL · Flask · SQLAlchemy · MySQL · pandas · pytest 
 
 <!-- UPDATED:START -->
 
-<sub>Updated automatically from live GitHub data on 12 Nov 2026.</sub>
+<sub>Updated automatically from live GitHub data on 13 Nov 2026.</sub>
 
 <!-- UPDATED:END -->
